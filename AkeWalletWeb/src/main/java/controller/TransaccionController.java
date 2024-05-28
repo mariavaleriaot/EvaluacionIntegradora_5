@@ -9,8 +9,11 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import model.Transaccion;
+
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
 @WebServlet("/transaccion")
 public class TransaccionController extends HttpServlet {
@@ -22,7 +25,6 @@ public class TransaccionController extends HttpServlet {
     @Override
     public void init() throws ServletException {
         super.init();
-        // Creando instancia de la implementación de TransaccionDAO con DriverManager
         transaccionDAO = new TransaccionDAOImpl();
         usuarioDAO = new UsuarioDAOImpl();
     }
@@ -34,28 +36,66 @@ public class TransaccionController extends HttpServlet {
 
         if (action != null) {
             try {
+                if (monto <= 0) {
+                    request.getSession().setAttribute("error", "El monto debe ser mayor que 0");
+                    actualizarVistaConHistorial(request, response, nombreUsuario);
+                    return;
+                }
+
                 switch (action) {
                     case "depositar":
                         transaccionDAO.realizarDeposito(nombreUsuario, monto);
-                        request.setAttribute("message", "Depósito exitoso");
+                        request.getSession().setAttribute("message", "Depósito exitoso");
                         break;
                     case "retirar":
+                        double saldoActual = usuarioDAO.consultarSaldo(nombreUsuario);
+                        if (monto > saldoActual) {
+                            request.getSession().setAttribute("error", "Saldo insuficiente");
+                            actualizarVistaConHistorial(request, response, nombreUsuario);
+                            return;
+                        }
                         transaccionDAO.realizarRetiro(nombreUsuario, monto);
-                        request.setAttribute("message", "Retiro exitoso");
+                        request.getSession().setAttribute("message", "Retiro exitoso");
                         break;
                     default:
                         response.sendRedirect("index.jsp");
                         return;
                 }
 
-                // Obtener el saldo actualizado
-                double saldo = usuarioDAO.consultarSaldo(nombreUsuario);
-                request.setAttribute("saldo", saldo);
-                request.getRequestDispatcher("resultado.jsp").forward(request, response);
+                actualizarVistaConHistorial(request, response, nombreUsuario);
             } catch (SQLException e) {
                 e.printStackTrace();
                 response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error en la transacción");
             }
         }
+    }
+
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        String action = request.getParameter("action");
+        String nombreUsuario = (String) request.getSession().getAttribute("nombreUsuario");
+
+        if ("historial".equals(action)) {
+            try {
+                Boolean mostrarHistorial = (Boolean) request.getSession().getAttribute("mostrarHistorial");
+                if (mostrarHistorial == null || !mostrarHistorial) {
+                    request.getSession().setAttribute("mostrarHistorial", true);
+                    List<Transaccion> historial = usuarioDAO.obtenerHistorial(nombreUsuario);
+                    request.getSession().setAttribute("historial", historial);
+                } else {
+                    request.getSession().setAttribute("mostrarHistorial", false);
+                    request.getSession().removeAttribute("historial");
+                }
+                actualizarVistaConHistorial(request, response, nombreUsuario);
+            } catch (SQLException e) {
+                e.printStackTrace();
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error al consultar el historial");
+            }
+        }
+    }
+
+    private void actualizarVistaConHistorial(HttpServletRequest request, HttpServletResponse response, String nombreUsuario) throws SQLException, ServletException, IOException {
+        double saldo = usuarioDAO.consultarSaldo(nombreUsuario);
+        request.getSession().setAttribute("saldo", saldo);
+        response.sendRedirect("inicio.jsp");
     }
 }
