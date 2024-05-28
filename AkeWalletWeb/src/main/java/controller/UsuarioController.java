@@ -7,8 +7,11 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import model.Transaccion;
+
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.List;
 
 @WebServlet("/usuario")
 public class UsuarioController extends HttpServlet {
@@ -19,38 +22,24 @@ public class UsuarioController extends HttpServlet {
     @Override
     public void init() throws ServletException {
         super.init();
-        // Creando instancia de la implementación de UsuarioDAO con DriverManager
         usuarioDAO = new UsuarioDAOImpl();
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
-        if (action != null) {
-            switch (action) {
-                case "consultarSaldo":
-                    consultarSaldo(request, response);
-                    break;
-                default:
-                    response.sendRedirect("index.jsp");
-            }
-        } else {
-            response.sendRedirect("index.jsp");
-        }
-    }
-
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Tu lógica para manejar las solicitudes POST relacionadas con los usuarios
-    }
-
-    private void consultarSaldo(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String nombreUsuario = (String) request.getSession().getAttribute("nombreUsuario");
-        try {
-            double saldo = usuarioDAO.consultarSaldo(nombreUsuario);
-            request.setAttribute("saldo", saldo);
-            request.getRequestDispatcher("inicio.jsp").forward(request, response);
-        } catch (SQLException e) {
-            e.printStackTrace();
-            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error al obtener el saldo del usuario");
+
+        if ("consultarSaldo".equals(action)) {
+            try {
+                double saldo = usuarioDAO.consultarSaldo(nombreUsuario);
+                List<Transaccion> historial = usuarioDAO.obtenerHistorial(nombreUsuario);
+                request.getSession().setAttribute("saldo", saldo);
+                request.getSession().setAttribute("historial", historial);
+                response.sendRedirect("inicio.jsp");
+            } catch (SQLException e) {
+                e.printStackTrace();
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error al consultar el saldo");
+            }
         }
     }
 }
