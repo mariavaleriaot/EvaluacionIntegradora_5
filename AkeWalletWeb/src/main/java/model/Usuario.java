@@ -1,5 +1,9 @@
 package model;
 
+
+/**
+ * Clase que representa un usuario en el sistema.
+ */
 public class Usuario {
     private int id;
     private String nombre;

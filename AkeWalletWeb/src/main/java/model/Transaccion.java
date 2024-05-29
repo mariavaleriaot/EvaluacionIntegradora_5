@@ -1,7 +1,9 @@
 package model;
 
 import java.sql.Timestamp;
-
+/**
+ * Clase que representa una transacción financiera.
+ */
 public class Transaccion {
     private int id;
     private int usuarioId;

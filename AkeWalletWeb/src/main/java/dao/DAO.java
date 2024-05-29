@@ -6,12 +6,18 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 
+/**
+ * Clase abstracta que proporciona métodos comunes para interactuar con la base de datos.
+ */
 public abstract class DAO {
 
     private Connection conn;
     private ResultSet resultSet;
     private Statement stmt;
 
+    /**
+     * Método para conectar a la base de datos.
+     */
     protected void conectarDb() {
         try {
             if (conn == null || conn.isClosed()) {
@@ -32,6 +38,12 @@ public abstract class DAO {
         }
     }
 
+    /**
+     * Obtiene una conexión a la base de datos.
+     *
+     * @return La conexión a la base de datos.
+     * @throws SQLException Si ocurre algún error al conectar a la base de datos.
+     */
     protected Connection getConnection() throws SQLException {
         if (conn == null || conn.isClosed()) {
             conectarDb();
@@ -39,6 +51,12 @@ public abstract class DAO {
         return conn;
     }
 
+    /**
+     * Ejecuta una consulta SQL y devuelve un ResultSet con los resultados.
+     *
+     * @param sql La consulta SQL a ejecutar.
+     * @return Un ResultSet con los resultados de la consulta.
+     */
     protected ResultSet consultar(String sql) {
         try {
             conectarDb();
@@ -51,6 +69,12 @@ public abstract class DAO {
         }
     }
 
+    /**
+     * Ejecuta una instrucción SQL (INSERT, UPDATE, DELETE) y devuelve la cantidad de registros modificados.
+     *
+     * @param sql La instrucción SQL a ejecutar.
+     * @return La cantidad de registros modificados por la instrucción.
+     */
     protected int ejecutarSql(String sql) {
         try {
             conectarDb();
@@ -63,6 +87,9 @@ public abstract class DAO {
         }
     }
 
+    /**
+     * Cierra la conexión a la base de datos, el statement y el resultSet.
+     */
     protected void close() {
         try {
             if (stmt != null) {

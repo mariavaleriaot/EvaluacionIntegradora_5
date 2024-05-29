@@ -15,6 +15,9 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.List;
 
+/**
+ * Servlet que maneja las transacciones financieras de los usuarios.
+ */
 @WebServlet("/transaccion")
 public class TransaccionController extends HttpServlet {
     private static final long serialVersionUID = 1L;
@@ -22,6 +25,11 @@ public class TransaccionController extends HttpServlet {
     private TransaccionDAO transaccionDAO;
     private UsuarioDAO usuarioDAO;
 
+    /**
+     * Inicializa el servlet y crea instancias de TransaccionDAOImpl y UsuarioDAOImpl.
+     *
+     * @throws ServletException Si ocurre algún error durante la inicialización del servlet.
+     */
     @Override
     public void init() throws ServletException {
         super.init();
@@ -29,6 +37,14 @@ public class TransaccionController extends HttpServlet {
         usuarioDAO = new UsuarioDAOImpl();
     }
 
+    /**
+     * Maneja las solicitudes POST para realizar transacciones financieras.
+     *
+     * @param request  El objeto HttpServletRequest que contiene la solicitud del cliente.
+     * @param response El objeto HttpServletResponse que contiene la respuesta que se enviará al cliente.
+     * @throws ServletException Si ocurre algún error durante el manejo de la solicitud.
+     * @throws IOException      Si ocurre algún error de entrada/salida durante el manejo de la solicitud.
+     */
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
         String nombreUsuario = (String) request.getSession().getAttribute("nombreUsuario");
@@ -70,6 +86,14 @@ public class TransaccionController extends HttpServlet {
         }
     }
 
+    /**
+     * Maneja las solicitudes GET para obtener el historial de transacciones.
+     *
+     * @param request  El objeto HttpServletRequest que contiene la solicitud del cliente.
+     * @param response El objeto HttpServletResponse que contiene la respuesta que se enviará al cliente.
+     * @throws ServletException Si ocurre algún error durante el manejo de la solicitud.
+     * @throws IOException      Si ocurre algún error de entrada/salida durante el manejo de la solicitud.
+     */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         String action = request.getParameter("action");
         String nombreUsuario = (String) request.getSession().getAttribute("nombreUsuario");
@@ -93,6 +117,16 @@ public class TransaccionController extends HttpServlet {
         }
     }
 
+    /**
+     * Actualiza la vista con el saldo actual del usuario y redirige a la página de inicio.
+     *
+     * @param request        El objeto HttpServletRequest que contiene la solicitud del cliente.
+     * @param response       El objeto HttpServletResponse que contiene la respuesta que se enviará al cliente.
+     * @param nombreUsuario El nombre del usuario del que se actualizará el saldo.
+     * @throws SQLException  Si ocurre algún error al interactuar con la base de datos.
+     * @throws ServletException Si ocurre algún error durante el manejo de la solicitud.
+     * @throws IOException      Si ocurre algún error de entrada/salida durante el manejo de la solicitud.
+     */
     private void actualizarVistaConHistorial(HttpServletRequest request, HttpServletResponse response, String nombreUsuario) throws SQLException, ServletException, IOException {
         double saldo = usuarioDAO.consultarSaldo(nombreUsuario);
         request.getSession().setAttribute("saldo", saldo);
