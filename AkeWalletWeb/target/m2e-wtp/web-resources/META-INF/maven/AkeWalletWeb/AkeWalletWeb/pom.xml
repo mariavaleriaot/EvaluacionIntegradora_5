@@ -5,17 +5,29 @@
   <version>0.0.1-SNAPSHOT</version>
   <packaging>war</packaging>
   <name>AkeWalletWeb</name>
+
   <dependencies>
+    <!-- Provided Dependency for Jakarta EE Web API -->
     <dependency>
       <groupId>jakarta.platform</groupId>
       <artifactId>jakarta.jakartaee-web-api</artifactId>
       <version>9.1.0</version>
       <scope>provided</scope>
     </dependency>
+
+    <!-- Dependency for Jakarta MVC API -->
     <dependency>
       <groupId>jakarta.mvc</groupId>
       <artifactId>jakarta.mvc-api</artifactId>
       <version>2.0.0</version>
+    </dependency>
+
+    <!-- JUnit 5 dependencies -->
+    <dependency>
+      <groupId>org.junit.jupiter</groupId>
+      <artifactId>junit-jupiter-api</artifactId>
+      <version>5.8.1</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.junit.jupiter</groupId>
@@ -23,21 +35,26 @@
       <version>5.8.1</version>
       <scope>test</scope>
     </dependency>
+
+    <!-- Mockito dependency -->
     <dependency>
-      <groupId>org.junit.jupiter</groupId>
-      <artifactId>junit-jupiter-api</artifactId>
-      <version>5.8.1</version>
+      <groupId>org.mockito</groupId>
+      <artifactId>mockito-core</artifactId>
+      <version>3.9.0</version>
       <scope>test</scope>
     </dependency>
-    <!-- Otras dependencias -->
+
+    <!-- Project-specific dependency -->
     <dependency>
-    	<groupId>cl.bootcamp.clase_66</groupId>
-    	<artifactId>clase_66</artifactId>
-    	<version>0.0.1-SNAPSHOT</version>
+      <groupId>cl.bootcamp.clase_66</groupId>
+      <artifactId>clase_66</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
     </dependency>
   </dependencies>
+
   <build>
     <plugins>
+      <!-- Compiler plugin to specify Java version -->
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.8.1</version>
@@ -45,6 +62,8 @@
           <release>21</release>
         </configuration>
       </plugin>
+
+      <!-- WAR plugin for packaging the application -->
       <plugin>
         <artifactId>maven-war-plugin</artifactId>
         <version>3.2.3</version>

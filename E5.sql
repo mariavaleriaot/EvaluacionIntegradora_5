@@ -21,4 +21,5 @@ CREATE TABLE transaccion (
 INSERT INTO usuario (nombre, clave, saldo) VALUES ('Lalo Landa', 'Lalo123', 10000.00);
 select * from transaccion;
 select * from usuario;
-delete from usuario where id=1;
+
+

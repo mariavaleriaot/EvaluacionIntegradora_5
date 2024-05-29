@@ -37,7 +37,7 @@ public class TransaccionController extends HttpServlet {
         if (action != null) {
             try {
                 if (monto <= 0) {
-                    request.getSession().setAttribute("error", "El monto debe ser mayor que 0");
+                    request.getSession().setAttribute("error", "¡Atención! El monto debe ser mayor que 0");
                     actualizarVistaConHistorial(request, response, nombreUsuario);
                     return;
                 }
@@ -45,17 +45,17 @@ public class TransaccionController extends HttpServlet {
                 switch (action) {
                     case "depositar":
                         transaccionDAO.realizarDeposito(nombreUsuario, monto);
-                        request.getSession().setAttribute("message", "Depósito exitoso");
+                        request.getSession().setAttribute("message", "¡Depósito exitoso!");
                         break;
                     case "retirar":
                         double saldoActual = usuarioDAO.consultarSaldo(nombreUsuario);
                         if (monto > saldoActual) {
-                            request.getSession().setAttribute("error", "Saldo insuficiente");
+                            request.getSession().setAttribute("error", "Error.Saldo insuficiente");
                             actualizarVistaConHistorial(request, response, nombreUsuario);
                             return;
                         }
                         transaccionDAO.realizarRetiro(nombreUsuario, monto);
-                        request.getSession().setAttribute("message", "Retiro exitoso");
+                        request.getSession().setAttribute("message", "¡Retiro exitoso!");
                         break;
                     default:
                         response.sendRedirect("index.jsp");
